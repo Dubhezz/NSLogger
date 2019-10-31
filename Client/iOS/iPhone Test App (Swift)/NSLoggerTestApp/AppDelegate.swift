@@ -21,8 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Avoid NSLogger client to search on Bonjour.
         //LoggerSetViewerHost(nil, "localhost" as NSString, 50000)
 
+        SecrchServices { (services, logger) in
+            print("dasdsa");
+            ConnectToService(logger, services?[0]);
+        }
         Logger.shared.log(.app, .important, "Hello, Swift Logger Tester! 🤖")
-
         return true
     }
 

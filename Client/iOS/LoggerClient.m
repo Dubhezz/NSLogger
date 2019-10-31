@@ -1555,6 +1555,18 @@ static void LoggerFlushQueueToBufferStream(Logger *logger, BOOL firstEntryIsClie
 #pragma mark -
 #pragma mark Bonjour browsing
 // -----------------------------------------------------------------------------
+
+static ServiceListCallBack closure = nil;
+static NSMutableSet *serviceSet = nil;
+void SecrchServices(ServiceListCallBack _Nullable callBack) {
+    closure = callBack;
+}
+
+void ConnectToService(Logger * _Nullable logger, NSNetService * _Nullable service) {
+    LoggerConnectToService(logger, service);
+}
+
+
 static void LoggerStartBonjourBrowsing(Logger *logger)
 {
 	if (!logger->targetReachable ||
@@ -1723,17 +1735,33 @@ static void LoggerDisconnectFromService(Logger *logger, NSNetService *service)
 		self->_logger->options |= kLoggerOption_LogToConsole;
 	}
 }
-
+// 发现域名服务
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didFindDomain:(NSString *)domain moreComing:(BOOL)moreComing
 {
 	LoggerBrowseBonjourForServices(self->_logger, (__bridge CFStringRef)domain);
 }
-
+// 发现客户端服务
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didFindService:(NSNetService *)service moreComing:(BOOL)moreComing
 {
-	LoggerConnectToService(self->_logger, service);
-}
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+    
+        if (!serviceSet) {
+            serviceSet = [NSMutableSet set];
+        }
+        if (service) {
+            [serviceSet addObject:service];
+        }
+        
+        if (closure != nil) {
+            closure([serviceSet allObjects], self->_logger);
+        }
+//    });
+    
 
+//    [self.didaNetService netServiceBrowser:browser didFindService:service moreComing:YES];
+}
+// 客户端服务移除
 - (void)netServiceBrowser:(NSNetServiceBrowser *)browser didRemoveService:(NSNetService *)service moreComing:(BOOL)moreComing
 {
 	LoggerDisconnectFromService(self->_logger, service);

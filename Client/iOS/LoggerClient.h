@@ -244,6 +244,23 @@ extern void LogData_noFormat(NSString * _Nullable filename,
                              NSInteger level,
                              NSData * _Nonnull data) NSLOGGER_NOSTRIP;
 
+typedef void (*ServiceListCallBack)(NSArray <NSNetService *> *_Nullable, Logger *_Nullable);
+
+extern void SecrchServices(ServiceListCallBack _Nullable callBack) NSLOGGER_NOSTRIP;
+extern void ConnectToService(Logger * _Nullable logger, NSNetService * _Nullable service) NSLOGGER_NOSTRIP;
+
 #ifdef __cplusplus
 };
 #endif
+//
+//@protocol DidaNetServiceDelegate <NSObject>
+//
+//- (void)findAllNetServices:(NSArray <NSNetService *>*_Nullable)service;
+//
+//@end
+//
+//@interface DidaNetService : NSObject
+//
+//@property (nonatomic, assign) id <DidaNetServiceDelegate> _Nullable delegate;
+//- (void)netServiceBrowser:(NSNetServiceBrowser *_Nullable)browser didFindService:(NSNetService *_Nullable)service moreComing:(BOOL)moreComing;
+//@end
